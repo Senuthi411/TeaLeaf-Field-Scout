@@ -1,0 +1,6 @@
+import { createContext, useContext } from 'react';
+export interface TableState { query: string; setQuery(value: string): void; filters: Record<string,string>; setFilter(key: string,value: string): void; }
+export const TableContext=createContext<TableState>({query:'',setQuery:()=>{},filters:{},setFilter:()=>{}});
+export function TableSearch({className,placeholder}:{className?:string;placeholder:string}){const state=useContext(TableContext);return <input className={(className||'')+' table-search'} type="search" aria-label="Search this table" placeholder={placeholder} value={state.query} onChange={e=>state.setQuery(e.target.value)} />;}
+const options:Record<string,string[]>={Role:['Administrator','Supervisor','Disease expert','Field worker','Reporting user'],Estate:['EST-001','EST-002','EST-003'],Status:['Active','Inactive','Revoked'],Region:['Nuwara Eliya','Kandy','Badulla'],User:['USR-001','USR-003','USR-007','USR-009','USR-011'], 'Last seen':['Today','20 Oct','19 Oct']};
+export function TableSelect({label,className}:{label:string;className?:string}){const state=useContext(TableContext);return <select className={className} aria-label={'Filter by '+label} value={state.filters[label]||''} onChange={e=>state.setFilter(label,e.target.value)}><option value="">{label}: All</option>{(options[label]||[]).map(value=><option key={value}>{value}</option>)}</select>;}

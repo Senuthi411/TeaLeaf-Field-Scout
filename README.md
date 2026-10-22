@@ -163,3 +163,7 @@ For static hosting, configure an SPA fallback to index.html so direct visits and
 Development data is stored under tealeaf: keys in browser storage. Clearing site data resets the demo. Existing local user edits and saved settings from the previous frontend are migrated where available.
 
 The release ZIP contains source, all required design assets, dependency manifests/lockfile, environment example, README and tests. node_modules, local environment files, build output and temporary conversion files are excluded. Install dependencies with npm install after extracting.
+
+## React + TypeScript identity portal
+
+The separate implementation in identity-portal/ includes login, protected routes, and identity administration screens. See identity-portal/README.md for setup and demo credentials. Run npm install and npm run dev from that directory. The existing root application remains available with its original commands.

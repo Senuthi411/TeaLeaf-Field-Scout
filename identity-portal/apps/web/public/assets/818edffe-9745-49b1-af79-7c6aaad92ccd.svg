@@ -1,0 +1,7 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="dot">
+<rect x="2" y="2" width="40" height="40" rx="20" fill="white"/>
+<rect x="2" y="2" width="40" height="40" rx="20" stroke="#2E7D32" stroke-width="4"/>
+<circle id="Ellipse" cx="22" cy="22" r="8" fill="#2E7D32"/>
+</g>
+</svg>

@@ -1,0 +1,52 @@
+# Dependencies and generated builds
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.vite/
+.cache/
+
+# Local secrets (commit only placeholder examples)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+
+# Local browser profiles, tools, and verification output
+/.browser-check/
+/.tools/
+/verification/
+test-results/
+playwright-report/
+*.log
+npm-debug.log*
+
+# Reference PDFs and extracted document text
+/docs/
+*.pdf
+
+# Earlier vanilla prototype (the React app is in apps/web)
+/app.js
+/screens.js
+/index.html
+/server.cjs
+/verify.cjs
+
+# Original asset downloads and temporary Figma URL manifests
+# Keep apps/web/public/assets/: those are required by the React app.
+/assets/
+/design-assets.json
+/login-assets.json
+/download-assets.cjs
+
+# Editor and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
