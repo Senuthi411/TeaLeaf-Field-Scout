@@ -1,37 +1,63 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
+import SignInPage from './components/SignInPage';
+import DashboardPage from './components/DashboardPage';
 
+/**
+ * Main Application Component
+ * 
+ * Implements navigation between:
+ * 1. "Sign In" page (matching "D:\Member 1\Ui\1.png")
+ * 2. "Administrator Dashboard" page (matching "D:\Member 1\Ui\3840x2160.png")
+ * 
+ * Requirement:
+ * - "When click the sign in button go to the dashboard set this navigation"
+ */
 export default function App() {
-  const [count, setCount] = useState(0)
+  // Navigation state: 'signin' | 'dashboard'
+  const [currentPage, setCurrentPage] = useState('signin');
+
+  // Navigation handlers
+  const handleNavigateToDashboard = () => {
+    setCurrentPage('dashboard');
+  };
+
+  const handleNavigateToSignIn = () => {
+    setCurrentPage('signin');
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-slate-800">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-8 text-center space-y-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 mb-2">
-          <span className="text-3xl">🍃</span>
-        </div>
-        
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            TeaLeaf Field Scout
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            React + Tailwind CSS is ready to go!
-          </p>
-        </div>
-
-        <div className="pt-2">
-          <button
-            onClick={() => setCount((c) => c + 1)}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-medium transition duration-150 shadow-sm cursor-pointer"
-          >
-            Count is: {count}
-          </button>
-        </div>
-
-        <p className="text-xs text-slate-400">
-          Edit <code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-600">src/App.jsx</code> to begin building your project.
-        </p>
+    <div className="relative min-h-screen bg-slate-50 font-sans text-slate-900">
+      {/* Quick Preview Navigation Ribbon (fixed in bottom-right corner for effortless demo toggling) */}
+      <div className="fixed bottom-4 right-4 z-50 flex items-center gap-1.5 bg-black/85 backdrop-blur-md text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-lg border border-white/10 opacity-90 hover:opacity-100 transition-opacity">
+        <span className="text-gray-400 text-[11px] mr-1 hidden sm:inline">Active Page:</span>
+        <button
+          onClick={handleNavigateToSignIn}
+          className={`px-2.5 py-1 rounded-full text-xs font-semibold transition cursor-pointer ${
+            currentPage === 'signin'
+              ? 'bg-[#236b3b] text-white shadow-xs'
+              : 'text-gray-300 hover:text-white hover:bg-white/10'
+          }`}
+        >
+          1. Sign In
+        </button>
+        <button
+          onClick={handleNavigateToDashboard}
+          className={`px-2.5 py-1 rounded-full text-xs font-semibold transition cursor-pointer ${
+            currentPage === 'dashboard'
+              ? 'bg-[#236b3b] text-white shadow-xs'
+              : 'text-gray-300 hover:text-white hover:bg-white/10'
+          }`}
+        >
+          2. Dashboard
+        </button>
       </div>
+
+      {/* Conditional rendering of pages based on navigation state */}
+      {currentPage === 'signin' ? (
+        <SignInPage onSignIn={handleNavigateToDashboard} />
+      ) : (
+        <DashboardPage onSignOut={handleNavigateToSignIn} />
+      )}
     </div>
-  )
+  );
 }
