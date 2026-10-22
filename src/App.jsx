@@ -1,37 +1,112 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import ObservationStatsPage from './pages/ObservationStatsPage';
+import DashboardPage from './pages/DashboardPage';
+import PlaceholderPage from './pages/PlaceholderPage';
+import FilterModal from './components/FilterModal';
+import ExportModal from './components/ExportModal';
+import { navigationItems, demoRoles } from './data/mockData';
 
 export default function App() {
-  const [count, setCount] = useState(0)
+  // Navigation state: default to 'analytics-dashboard' (or 'observation-statistics')
+  const [activePage, setActivePage] = useState('observation-statistics');
+
+  // Sidebar collapse toggle state
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  // Active persona / role (Switch Demo Role feature)
+  // DUMMY DATA: Initial active role is 'Reporting user' (Maya Dissanayake)
+  const [activeRole, setActiveRole] = useState(demoRoles[0]);
+
+  // Global search input state
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Modals state for Filters and Export buttons
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  // Active breadcrumb label based on active page
+  const getBreadcrumbLabel = () => {
+    if (activePage === 'analytics-dashboard') return 'Dashboard';
+    if (activePage === 'observation-statistics') return 'Observation Statistics';
+    const found = navigationItems.find((n) => n.id === activePage);
+    return found ? found.label : 'Analytics';
+  };
+
+  // Report title for export modal
+  const getCurrentReportTitle = () => {
+    if (activePage === 'analytics-dashboard') return 'Analytics Dashboard Summary';
+    if (activePage === 'observation-statistics') return 'Observation Statistics Breakdown';
+    return `${getBreadcrumbLabel()} Report`;
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-slate-800">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-8 text-center space-y-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 mb-2">
-          <span className="text-3xl">🍃</span>
-        </div>
-        
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            TeaLeaf Field Scout
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            React + Tailwind CSS is ready to go!
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex overflow-x-hidden font-['Inter',sans-serif]">
+      {/* Dark Forest Green Left Navigation Sidebar */}
+      <Sidebar
+        navigationItems={navigationItems}
+        activePage={activePage}
+        setActivePage={setActivePage}
+        isCollapsed={isSidebarCollapsed}
+        setIsCollapsed={setIsSidebarCollapsed}
+      />
 
-        <div className="pt-2">
-          <button
-            onClick={() => setCount((c) => c + 1)}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-medium transition duration-150 shadow-sm cursor-pointer"
-          >
-            Count is: {count}
-          </button>
-        </div>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Sticky Header */}
+        <Header
+          currentBreadcrumb={getBreadcrumbLabel()}
+          activeRole={activeRole}
+          setActiveRole={setActiveRole}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
 
-        <p className="text-xs text-slate-400">
-          Edit <code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-600">src/App.jsx</code> to begin building your project.
-        </p>
+        {/* Dynamic Page Router */}
+        <main className="flex-1 flex flex-col">
+          {activePage === 'observation-statistics' && (
+            <ObservationStatsPage
+              onOpenFilters={() => setIsFilterModalOpen(true)}
+              onOpenExport={() => setIsExportModalOpen(true)}
+              onNavigateToObservationStats={() => setActivePage('observation-statistics')}
+            />
+          )}
+
+          {activePage === 'analytics-dashboard' && (
+            <DashboardPage
+              onOpenFilters={() => setIsFilterModalOpen(true)}
+              onOpenExport={() => setIsExportModalOpen(true)}
+              onNavigateToObservationStats={() => setActivePage('observation-statistics')}
+            />
+          )}
+
+          {activePage !== 'observation-statistics' && activePage !== 'analytics-dashboard' && (
+            <PlaceholderPage
+              title={getBreadcrumbLabel()}
+              onOpenFilters={() => setIsFilterModalOpen(true)}
+              onOpenExport={() => setIsExportModalOpen(true)}
+              onNavigateTo={setActivePage}
+            />
+          )}
+        </main>
       </div>
+
+      {/* Interactive Filters Modal */}
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApplyFilters={(filters) => {
+          console.log('Applied filters:', filters);
+        }}
+      />
+
+      {/* Interactive Export Modal */}
+      <ExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        currentReportTitle={getCurrentReportTitle()}
+      />
     </div>
-  )
+  );
 }
