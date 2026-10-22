@@ -1,14 +1,20 @@
-# TeaLeaf Field Scout OS — Agronomist Review Queue
+# TeaLeaf Field Scout OS — Expert Dashboard
 
-**Screen 6.1: Agronomist Pathological Triage Command & Expert Review Queue**
+**Frontend Implementation: Expert Dashboard (Screen CASE-01)**
 
-A high-performance agronomic triage dashboard built for plantation agronomists and plant pathologists to diagnose foliar diseases, monitor field scout submissions, evaluate SLA compliance, and dispatch targeted fungicide prescriptions across highland tea estates.
+A high-performance agronomic triage dashboard built for plantation plant pathologists and disease experts to evaluate foliar disease cases, review microscopic scouting evidence, and coordinate field disease management across highland tea estates.
 
 ---
 
 ## 🌿 Overview
 
-This frontend module implements the **Level-3 Pathological Triage Command** conforming to the **Tea Research Institute (TRI) Protocol v4.2**. It allows Senior Agronomists to review micrographic leaf specimen samples collected by handheld scout devices across estate divisions, verify AI neural vision diagnoses, and coordinate emergency quarantine advisories.
+This frontend module implements the **Expert Dashboard (Screen CASE-01)** and connected sub-modules matching the updated TeaLeaf Field Scout Figma design system:
+- **Primary Screen**: `Expert Dashboard` (`Cases > Expert Dashboard`)
+- **Connected Modules**: `Assigned Cases`, `Disease Catalog`, `Case History`
+- **Interactive Modals**:
+  - `Observation Details` (Evidence Viewer from Screen CAP-W02)
+  - `Switch Demo Role` (4-Persona Selector from Screen DEMO-01)
+  - `Welcome Back / Sign In` (Screen AUTH-01)
 
 ---
 
@@ -19,94 +25,55 @@ This frontend module implements the **Level-3 Pathological Triage Command** conf
 - **Bundler & Tooling**: Vite
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
-- **Design Specifications**: Figma (Screen 6.1 - Expert Review Queue)
+- **Design System**: Figma (TeaLeaf Field Scout OS)
 
 ---
 
-## ✨ Key Features
+## ✨ Features Implemented
 
-1. **Agronomist Pathological Triage Command**:
-   - Real-time KPI summaries: *Awaiting Diagnosis*, *Critical Escalations*, *High-Priority SLA*, and *Verified Today*.
-   - Live Estate LoRaWAN Mesh network telemetry status.
-   - Synchronized with 24 field scouts and estate repeaters.
+1. **Expert Dashboard (Main Screen)**:
+   - **4 KPI Metric Cards**:
+     - *Awaiting diagnosis*: **3** (`CASE-023, CASE-047, CASE-058`)
+     - *Diagnosed*: **2** (`CASE-006, CASE-042`)
+     - *Pending case link*: **1** (`REF-002 - OBS-011`)
+     - *Avg. time to diagnose*: **1.4 d** (`Demo figure`)
+   - **Awaiting Diagnosis Table**:
+     - `CASE-023` (East Hills • Brown blight • 05 Oct 2026)
+     - `CASE-047` (North Ridge • Blister blight • 12 Oct 2026)
+     - `CASE-058` (Upper Mist • Algal leaf spot • 14 Oct 2026)
+     - Clickable case rows opening full microscopic evidence.
+   - **Field Source Info Banner**:
+     - *(i) Suspected disease comes from the field. Your confirmed diagnosis is recorded separately.*
+   - **Recent Diagnoses**:
+     - `DIAG-042 • Grey blight` (CASE-042 • 05 Oct 2026)
+     - `DIAG-006 • Grey blight` (CASE-006 • 07 Oct 2026)
+   - **Catalog Quick Reference**:
+     - `Blister blight • DIS-001`, `Grey blight • DIS-002`, `Brown blight • DIS-003`, `Algal leaf spot • DIS-004`.
 
-2. **Specimen Review & Micrography**:
-   - High-fidelity foliar specimen visualizer with AI bounding box targeting rings and confidence ratings.
-   - Clinical specimen metadata including specimen IDs (`#DBB-8842`), tissue type, scout ID, and waiting intervals.
-   - Deep-dive diagnosis modal for microscopic verification, agronomist notes, and TRI chemical prescription dispatch.
+2. **Assigned Cases Module (Screen CASE-02)**:
+   - Filter tabs: *All 5*, *Awaiting diagnosis 3*, *Diagnosed 2*.
+   - Filter toolbar: Search, Estate dropdown, Disease dropdown, and Date range.
+   - Export CSV capability.
 
-3. **Field Pathology SLA Compliance**:
-   - Real-time median response windows and escalation threshold telemetry.
-   - One-click CSV telemetry export.
+3. **Observation Evidence Viewer Modal (Screen CAP-W02)**:
+   - High-resolution foliar disease micrographic visualizer.
+   - Observation metadata: ID `035-005`, Device ID `DEV-OBS-0065`, Estate `Riverbend`, Scout `Hiranji Hadeesha`.
+   - Linked records (`REV-008`, `COR-005`, `OBS-035-2`).
+   - One-click diagnosis confirmation.
 
-4. **TRI Reference Strain Index**:
-   - Searchable reference index of authorized chemical treatments (Copper Oxychloride, Carbendazim, Wettable Sulphur) and dosage rates.
-
-5. **Multi-View & Batch Operations**:
-   - Responsive Grid View and Tabular View toggles.
-   - Multi-criteria filtering by pathogen type, priority level, division, and waiting duration.
-   - Batch validation of AI-confirmed diagnoses (`>90%`) with confirmation modals.
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone or download the repository:
-   ```bash
-   git clone https://github.com/Senuthi411/TeaLeaf-Field-Scout.git
-   cd tealeaf-scout-frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Launch the development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Open your browser and navigate to:
-   ```text
-   http://localhost:5173/
-   ```
+4. **Demo Persona Switcher (Screen DEMO-01)**:
+   - Interactive modal supporting *Administrator*, *Supervisor*, *Disease Expert*, and *Reporting User*.
 
 ---
 
-## 📂 Project Structure
+## 🚀 Running the Project
 
-```text
-src/
-├── components/
-│   ├── Header.jsx             # Top bar, location dropdown & mesh status
-│   ├── Sidebar.jsx            # Module navigation & sensor hub widget
-│   ├── CommandHeader.jsx      # Protocol banner & advisory triggers
-│   ├── KPICards.jsx           # 4 pathology metrics cards
-│   ├── FilterBar.jsx          # Triage filters & batch validation controls
-│   ├── SpecimenCard.jsx       # Foliar specimen card with micrographic overlay
-│   ├── SpecimenTable.jsx      # Alternative tabular triage view
-│   ├── LeafGraphic.jsx        # SVG leaf disease micrographic renderer
-│   ├── BottomCards.jsx        # SLA compliance & TRI reference strain cards
-│   ├── DiagnosisModal.jsx     # High-resolution clinical review & Rx modal
-│   ├── ConfirmModal.jsx       # Batch approval confirmation dialog
-│   ├── AdvisoryModal.jsx      # Emergency quarantine broadcast modal
-│   ├── DiagnosticKeyModal.jsx # TRI diagnostic key reference guide
-│   └── OtherPageView.jsx      # Module router & placeholder views
-├── data/
-│   └── mockData.js            # Pathological specimen dataset & TRI protocols
-├── App.jsx                    # Root triage dashboard state & logic
-├── main.jsx                   # React entry point
-└── index.css                  # Global styles & typography
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Run local development server
+npm run dev
 ```
 
----
-
-## 📜 License
-Developed for the TeaLeaf Field Scout OS Project.
+Open [http://localhost:5173/](http://localhost:5173/) in your browser.
