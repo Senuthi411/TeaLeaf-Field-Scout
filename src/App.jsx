@@ -1,37 +1,137 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import SupervisorDashboard from './pages/SupervisorDashboard';
+import ReviewQueue from './pages/ReviewQueue';
+import ObservationModal from './components/ObservationModal';
+import { OBSERVATIONS_DATA } from './data/dummyData';
 
 export default function App() {
-  const [count, setCount] = useState(0)
+  // Navigation & Page State ('dashboard' | 'review-queue' | 'correction-queue' | etc.)
+  const [activePage, setActivePage] = useState('dashboard');
+
+  // Review Queue Filter Tab State (Default: 'All')
+  // This state is controlled and updated when clicking any of the 5 boxes on Dashboard!
+  const [selectedQueueTab, setSelectedQueueTab] = useState('All');
+
+  // Sidebar collapse toggle state
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  // Global search input state in Header
+  const [globalSearchQuery, setGlobalSearchQuery] = useState('');
+
+  // Demo user role state
+  const [currentRole, setCurrentRole] = useState('supervisor');
+
+  // Observations state (allows supervisor to update status interactively in the demo)
+  const [observations, setObservations] = useState(OBSERVATIONS_DATA);
+
+  // Active Observation ID for detailed modal inspection
+  const [selectedObservationId, setSelectedObservationId] = useState(null);
+
+  /**
+   * CRITICAL FEATURE:
+   * Handles navigation from the Supervisor Dashboard 5 metric boxes
+   * to the Review Queue page, automatically selecting the matching tab!
+   * 
+   * Mapping:
+   *  - "Awaiting review"   --> "Submitted"
+   *  - "In review"         --> "In review"
+   *  - "Open corrections"  --> "Correction requested"
+   *  - "Active referrals"  --> "Referred"
+   *  - "Verified"          --> "Verified"
+   */
+  const handleNavigateToQueueWithFilter = (targetTab, page = 'review-queue') => {
+    setSelectedQueueTab(targetTab || 'All');
+    setActivePage(page === 'fieldwork-assignments' ? 'review-queue' : 'review-queue');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Open observation modal by ID
+  const handleOpenObservationModal = (obsId) => {
+    setSelectedObservationId(obsId);
+  };
+
+  // Close observation modal
+  const handleCloseObservationModal = () => {
+    setSelectedObservationId(null);
+  };
+
+  // Update observation status in local state
+  const handleUpdateObservationStatus = (obsId, newStatus) => {
+    setObservations((prev) =>
+      prev.map((obs) =>
+        obs.id === obsId ? { ...obs, status: newStatus } : obs
+      )
+    );
+  };
+
+  // Get currently selected observation object for modal
+  const activeObservation = observations.find(
+    (obs) => obs.id === selectedObservationId
+  );
+
+  // Handle sidebar navigation changes
+  const handleSidebarNavigate = (pageId) => {
+    if (pageId === 'correction-queue') {
+      setSelectedQueueTab('Correction requested');
+      setActivePage('review-queue');
+    } else if (pageId === 'expert-referrals') {
+      setSelectedQueueTab('Referred');
+      setActivePage('review-queue');
+    } else {
+      setActivePage(pageId);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-slate-800">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-8 text-center space-y-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 mb-2">
-          <span className="text-3xl">🍃</span>
-        </div>
-        
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            TeaLeaf Field Scout
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            React + Tailwind CSS is ready to go!
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#f7f9f7] text-slate-800 flex font-sans antialiased selection:bg-emerald-100 selection:text-emerald-900">
+      {/* 1. Left Sidebar Navigation */}
+      <Sidebar
+        activePage={activePage}
+        setActivePage={handleSidebarNavigate}
+        isCollapsed={isSidebarCollapsed}
+        setIsCollapsed={setIsSidebarCollapsed}
+      />
 
-        <div className="pt-2">
-          <button
-            onClick={() => setCount((c) => c + 1)}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-medium transition duration-150 shadow-sm cursor-pointer"
-          >
-            Count is: {count}
-          </button>
-        </div>
+      {/* 2. Main Application Area */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
+        {/* Sticky Top Header */}
+        <Header
+          activePage={activePage}
+          setActivePage={setActivePage}
+          globalSearchQuery={globalSearchQuery}
+          setGlobalSearchQuery={setGlobalSearchQuery}
+          currentRole={currentRole}
+          setCurrentRole={setCurrentRole}
+        />
 
-        <p className="text-xs text-slate-400">
-          Edit <code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-600">src/App.jsx</code> to begin building your project.
-        </p>
+        {/* Dynamic Page Content */}
+        <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
+          {activePage === 'dashboard' ? (
+            <SupervisorDashboard
+              onNavigateToQueueWithFilter={handleNavigateToQueueWithFilter}
+              onOpenObservationModal={handleOpenObservationModal}
+            />
+          ) : (
+            <ReviewQueue
+              selectedTab={selectedQueueTab}
+              setSelectedTab={setSelectedQueueTab}
+              onOpenObservationModal={handleOpenObservationModal}
+              onUpdateObservationStatus={handleUpdateObservationStatus}
+            />
+          )}
+        </main>
       </div>
+
+      {/* 3. Observation Details & Action Inspection Modal */}
+      {selectedObservationId && (
+        <ObservationModal
+          observation={activeObservation}
+          onClose={handleCloseObservationModal}
+          onUpdateStatus={handleUpdateObservationStatus}
+        />
+      )}
     </div>
-  )
+  );
 }
